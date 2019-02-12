@@ -41,15 +41,15 @@ class LoginController extends Controller
     public function redirectToFacebookProvider()
    {
     return Socialite::driver('facebook')->redirect();
-}
+    }
  
-/**
- * Obtain the user information from Facebook.
- *
- * @return void
- */
- public function handleProviderFacebookCallback()
-{
+   /**
+   * Obtain the user information from Facebook.
+   *
+   * @return void
+   */
+   public function handleProviderFacebookCallback()
+  {
     $auth_user = Socialite::driver('facebook')->user();
  
     $user = User::updateOrCreate(
@@ -64,5 +64,5 @@ class LoginController extends Controller
  
     Auth::login($user, true);
     return redirect()->to('/'); // Redirect to a secure page
-}
+  }
 }
