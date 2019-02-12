@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Socialite;
+use Auth;
+use App\User;
 
 class LoginController extends Controller
 {
@@ -37,32 +40,45 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    //facebook controllers
-    public function redirectToFacebookProvider()
-   {
-    return Socialite::driver('facebook')->redirect();
+    /**
+     * Redirect the user to the Socialite provider authentication page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectToProvider($provider)
+    {
+        return Socialite::driver($provider)->redirect();
     }
- 
-   /**
-   * Obtain the user information from Facebook.
-   *
-   * @return void
-   */
-   public function handleProviderFacebookCallback()
-  {
-    $auth_user = Socialite::driver('facebook')->user();
- 
-    $user = User::updateOrCreate(
-        [
-            'email' => $auth_user->email
-        ],
-        [
-            'token' => $auth_user->token,
-            'name'  =>  $auth_user->name
-        ]
-    );
- 
-    Auth::login($user, true);
-    return redirect()->to('/'); // Redirect to a secure page
-  }
+
+    /**
+     * Obtain the user information from Socialite provider.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function handleProviderCallback($provider)
+    {        
+        if($provider == 'google')
+        {
+            $socialiteUser = Socialite::driver($provider)->stateless()->user();
+        }
+        else
+        {
+            $socialiteUser = Socialite::driver($provider)->user();
+        }
+
+        $user = User::where('email', $socialiteUser->getEmail())->first();
+        
+        if(!$user)
+        {
+            $user = User::createSocialiteUser($socialiteUser, $provider);
+        }
+        else 
+        {
+            $user = User::updateSocialiteUser($socialiteUser, $user);
+        }
+        
+        Auth::login($user, true);
+
+        return redirect($this->redirectTo);
+    }
 }
