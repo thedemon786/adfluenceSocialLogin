@@ -10,6 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+if (App::environment('production')) {
+    URL::forceScheme('https');
+}
 
 Route::get('/', function () {
     return view('welcome');
