@@ -66,4 +66,3 @@ class LoginController extends Controller
     return redirect()->to('/'); // Redirect to a secure page
 }
 }
-}
