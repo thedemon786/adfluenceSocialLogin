@@ -69,7 +69,7 @@
             </div>
             <div class="panel-heading">Login with Facebook</div>
                 <div class="panel-body">
-                    <a class="btn btn-primary" href="https://adfluence.herokuapp.com/login/facebook">
+                    <a class="btn btn-primary" href="/login/facebook">
                         Facebook Login
                     </a>
                 </div>
